@@ -24,9 +24,21 @@ var Main = new(function()
 		if( $page === 'index' )
 		{
 			$( '#logout-btn' ).click( _logout );
-			$( '#create-yoga' ).click( _createYoga );
-			$( '#create-pilates' ).click( _createPilates );
-			$( '#create-special' ).click( _createSpecial );
+			// $( '#create-yoga' ).click( _createYoga );
+			$( '.creation' ).click(function(){
+				var type = $( this ).attr( 'id' );
+				_createClassOfType( type );
+			});
+			// $( '#create-yoga' ).click(function(){
+			// 	_createClassOfType( 'yoga' );
+			// });
+			// $( '#create-pilates' )click(function(){
+			// 	_createClassOfType( 'pilates' );
+			// });
+			// $( '#create-special' )click(function(){
+			// 	_createClassOfType( 'special' );
+			// });
+
 			$( '.add-student' ).click( _addStudentToForm );
 			$( '#add-student-to-class' ).click( _addStudentToClass );
 			$( '.delete-from-class' ).click( _deleteStudentFromClass );
@@ -40,10 +52,16 @@ var Main = new(function()
 				if( classTeacher === cookie( 'cobra_login' ) )
 				{
 					_currentClassID = classElements[2];
+					_currentClassType = classElements[1];
 
-					_showForms( _currentClassID, classElements[1] );
+					_showForms( _currentClassID );
 				}
+				// $( '#students-dropdown' ).show();
 			}
+			// else
+			// {
+			// 	$( '#students-dropdown' ).hide();
+			// }
 		}else if( $page === 'class-admin' )
 		{
 			$( '.pay-class' ).click( _payClass );
@@ -107,52 +125,60 @@ var Main = new(function()
 	// 	}
 	// };
 
-	function _createYoga( $evt )
+	function _createClassOfType( $type )
 	{
-		console.log( '_createYoga' );
+		_currentClassType = $type;
 
 		var userData =
 		{
-		    // name: cookie( 'username' ),
-		    login: cookie( 'cobra_login' ),
-		    type: "yoga",
-		    sid: cookie( 'cobra_sid' ),
-		    timestamp: new Date().getTime()
+			// name: cookie( 'username' ),
+			login: cookie( 'cobra_login' ),
+			type: _currentClassType,
+			sid: cookie( 'cobra_sid' ),
+			timestamp: new Date().getTime()
 		};
 
 		$.post(
-		    "http://skoch.local/cobra-admin/php/addClass.php",
-		    { data: userData },
-		    function( $data )
-		    {
-		    	console.log( '$data', $data );
-		        if( $data.result == 'class added' )
-		        {
-		        	_currentClassID = $data.class_id['$id'];
-		        	cookie.set({
-		        	    cobra_class_id: $data.login + '-yoga-' + _currentClassID
-		        	});
-		        	_showForms( $data.class_id['$id'], 'yoga' );
-		        }
-		    },
-		    "json"
+			"http://skoch.local/cobra-admin/php/addClass.php",
+			{ data: userData },
+			function( $data )
+			{
+				console.log( '$data', $data );
+				if( $data.result == 'class added' )
+				{
+					_currentClassID = $data.class_id['$id'];
+					cookie.set({
+						cobra_class_id: $data.login + '-' + _currentClassType + '-' + _currentClassID
+					});
+					_showForms( _currentClassID );
+				}
+			},
+			"json"
 		);
 	};
-	function _createPilates( $evt )
-	{
-		var cookies = cookie.all();
-		console.log( 'cookies', cookies );
-	};
+
+	// function _createYoga( $evt )
+	// {
+	// 	console.log( '_createYoga' );
+
+
+	// };
+	// function _createPilates( $evt )
+	// {
+	// 	var cookies = cookie.all();
+	// 	console.log( 'cookies', cookies );
+	// };
 	function _createSpecial( $evt )
 	{
 
 	};
-	function _showForms( $class_id, $type )
+
+	function _showForms( $class_id )
 	{
-		_currentClassType = $type;
 		$( '#class-form' ).removeClass( 'hidden' );
 		$( '#student-form' ).removeClass( 'hidden' );
 		$( '#add-class' ).addClass( 'disabled' );
+		$( '#students-dropdown' ).show();
 
 		var timestamp = $class_id.toString().substring( 0, 8 );
 		var date = new Date( parseInt( timestamp, 16 ) * 1000 );
@@ -319,57 +345,57 @@ var Main = new(function()
 		// console.log( 'total', total );
 
 		$.post(
-		    "http://skoch.local/cobra-admin/php/addStudentToClass.php",
-		    { data: userData },
-		    function( $data )
-		    {
-		        if( $data.success )
-		        {
-		        	console.log( 'ADDED STUDENT', $data.student_id );
-		            // reset student form
-		            _resetStudentForm();
-		            // add student to table
-		            // var display_student_id = student_id;
-		            // if( $data.new_student_id != "" )
-		            // {
-		            // 	display_student_id = $data.student_id;
-		            // }
-		            var student_info = '<tr id="' + $data.student_id + '">';
-		            student_info += '<td>' + student_name + '</td>';
-		            if( purchased_class_card )
-		            {
-		            	student_info += '<td>yes</td>';
-		            }else
-		            {
-		            	student_info += '<td>—</td>';
-		            }
-		            student_info += '<td>' + goods_display.substring( 0, goods_display.length - 2 ) + '</td>';
-		            student_info += '<td>' + payment + '</td>';
+			"http://skoch.local/cobra-admin/php/addStudentToClass.php",
+			{ data: userData },
+			function( $data )
+			{
+				if( $data.success )
+				{
+					console.log( 'ADDED STUDENT', $data.student_id );
+					// reset student form
+					_resetStudentForm();
+					// add student to table
+					// var display_student_id = student_id;
+					// if( $data.new_student_id != "" )
+					// {
+					// 	display_student_id = $data.student_id;
+					// }
+					var student_info = '<tr id="' + $data.student_id + '">';
+					student_info += '<td>' + student_name + '</td>';
+					if( purchased_class_card )
+					{
+						student_info += '<td>yes</td>';
+					}else
+					{
+						student_info += '<td>—</td>';
+					}
+					student_info += '<td>' + goods_display.substring( 0, goods_display.length - 2 ) + '</td>';
+					student_info += '<td>' + payment + '</td>';
 
-		            // if( class_payment === 'class card' )
-		            // {
-		            //     ttl = total;
-		            // }else
-		            // {
-		            //     if( _currentClassType === 'yoga' )
-		            //     {
-		            //         ttl = total + 12;
-		            //     }else
-		            //     {
-		            //         ttl = total + 15;
-		            //     }
-		            // }
+					// if( class_payment === 'class card' )
+					// {
+					//     ttl = total;
+					// }else
+					// {
+					//     if( _currentClassType === 'yoga' )
+					//     {
+					//         ttl = total + 12;
+					//     }else
+					//     {
+					//         ttl = total + 15;
+					//     }
+					// }
 
-		            student_info += '<td>' + total + '</td>';
-		            var delete_btn = '<button class="btn btn-mini btn-danger delete-from-class" data-payment="' + payment + '"';
-		            delete_btn += 'data-id="' + $data.student_id + '" type="button">Delete</button>';
-		            student_info += '<td class="delete-student">' + delete_btn + '</td>';
-		            student_info += '</tr>';
+					student_info += '<td>' + total + '</td>';
+					var delete_btn = '<button class="btn btn-mini btn-danger delete-from-class" data-payment="' + payment + '"';
+					delete_btn += 'data-id="' + $data.student_id + '" type="button">Delete</button>';
+					student_info += '<td class="delete-student">' + delete_btn + '</td>';
+					student_info += '</tr>';
 
-		            $( '#students' ).append( student_info );
-		        }
-		    },
-		    "json"
+					$( '#students' ).append( student_info );
+				}
+			},
+			"json"
 		);
 	};
 
@@ -385,17 +411,17 @@ var Main = new(function()
 		};
 
 		$.post(
-		    "http://skoch.local/cobra-admin/php/deleteStudentFromClass.php",
-		    { data: data },
-		    function( $data )
-		    {
-		        // if( $data.result == 'student deleted from class' )
-		        if( $data.success )
-		        {
+			"http://skoch.local/cobra-admin/php/deleteStudentFromClass.php",
+			{ data: data },
+			function( $data )
+			{
+				// if( $data.result == 'student deleted from class' )
+				if( $data.success )
+				{
 					$( '#' + $data['student_id'] ).remove();
-		        }
-		    },
-		    "json"
+				}
+			},
+			"json"
 		);
 	};
 
@@ -404,37 +430,38 @@ var Main = new(function()
 		$evt.preventDefault();
 
 		$.post(
-		    "http://skoch.local/cobra-admin/php/saveClass.php",
-		    { class_id: _currentClassID },
-		    function( $data )
-		    {
-		        if( $data.success )
-		        {
-		        	console.log( 'class is saved', $data['student_ids'] );
-		        	for( var i = $data['student_ids'].length - 1; i >= 0; i-- )
-		        	{
-		        		$( '#' + $data['student_ids'][i] ).remove();
-		        	}
-		        	$( '#class-caption' ).html( '' );
-		        	cookie.remove( 'cobra_class_id' );
+			"http://skoch.local/cobra-admin/php/saveClass.php",
+			{ class_id: _currentClassID },
+			function( $data )
+			{
+				if( $data.success )
+				{
+					console.log( 'class is saved', $data['student_ids'] );
+					for( var i = $data['student_ids'].length - 1; i >= 0; i-- )
+					{
+						$( '#' + $data['student_ids'][i] ).remove();
+					}
+					$( '#class-caption' ).html( '' );
+					cookie.remove( 'cobra_class_id' );
 
-		        	_resetStudentForm();
+					_resetStudentForm();
 
-		        	_isExistingStudent = false;
-		        	_currentClassType = "";
-		        	_currentClassID = "";
+					_isExistingStudent = false;
+					_currentClassType = "";
+					_currentClassID = "";
 
-		        	$( '#class-form' ).addClass( 'hidden' );
-		        	$( '#student-form' ).addClass( 'hidden' );
-		        	$( '#add-class' ).removeClass( 'disabled' );
+					$( '#class-form' ).addClass( 'hidden' );
+					$( '#student-form' ).addClass( 'hidden' );
+					$( '#add-class' ).removeClass( 'disabled' );
 
 					// clear form, hide, enable add class btn
 					// delete relevant cookies
 
 					$( '#success-message' ).removeClass( 'hidden' );
-		        }
-		    },
-		    "json"
+					$( '#students-dropdown' ).hide();
+				}
+			},
+			"json"
 		);
 	};
 
@@ -444,16 +471,16 @@ var Main = new(function()
 
 		var class_id = $( $evt.target ).attr( 'data-class-id' );
 		$.post(
-		    "http://skoch.local/cobra-admin/php/payClass.php",
-		    { class_id: class_id },
-		    function( $data )
-		    {
-		        if( $data.result == 'class paid' )
-		        {
+			"http://skoch.local/cobra-admin/php/payClass.php",
+			{ class_id: class_id },
+			function( $data )
+			{
+				if( $data.result == 'class paid' )
+				{
 					$( '#class-' + class_id ).remove();
-		        }
-		    },
-		    "json"
+				}
+			},
+			"json"
 		);
 	};
 	function _resetStudentForm()
@@ -471,25 +498,25 @@ var Main = new(function()
 	{
 		$evt.preventDefault();
 
-	    var userData =
-	    {
-	        name: cookie( 'cobra_username' ),
-	        timestamp: new Date().getTime()
-	    };
+		var userData =
+		{
+			name: cookie( 'cobra_username' ),
+			timestamp: new Date().getTime()
+		};
 
-	    $.post(
-	        "http://skoch.local/cobra-admin/php/logout.php",
-	        { data: userData },
-	        function( $data )
-	        {
-	            if( $data.result == 'user logged out' )
-	            {
-	                cookie.remove( 'cobra_username', 'cobra_login', 'cobra_sid' );
-	                window.location.href = 'http://skoch.local/cobra-admin/login.php';
-	            }
-	        },
-	        "json"
-	    );
+		$.post(
+			"http://skoch.local/cobra-admin/php/logout.php",
+			{ data: userData },
+			function( $data )
+			{
+				if( $data.result == 'user logged out' )
+				{
+					cookie.remove( 'cobra_username', 'cobra_login', 'cobra_sid' );
+					window.location.href = 'http://skoch.local/cobra-admin/login.php';
+				}
+			},
+			"json"
+		);
 	};
 	function _getFriendlyDate( $date )
 	{
@@ -539,7 +566,7 @@ var Main = new(function()
 
 		if (
 			target.length &&
-		 	! target.is( 'a' )
+			! target.is( 'a' )
 		)
 		{
 			target = target.closest( 'a' )

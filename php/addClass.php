@@ -25,7 +25,7 @@ timestamp: new Date().getTime()
 				"teacher" => $data['login'],
 				"type" => $data['type'],
 				"paid" => false,
-				"is_active" => false,
+				"is_active" => true,
 				"timestamp" => $data['timestamp']
 			);
 
