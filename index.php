@@ -201,10 +201,10 @@
 					<div class="controls">
 						<!-- Inline Radios -->
 						<label class="radio inline">
-							<input type="radio" value="Yes" name="use-class-card" checked="checked">Yes
+							<input type="radio" value="Yes" name="use-class-card">Yes
 						</label>
 						<label class="radio inline">
-							<input type="radio" value="No" name="use-class-card">No
+							<input type="radio" value="No" name="use-class-card" checked="checked">No
 						</label>
 					</div>
 				</div>

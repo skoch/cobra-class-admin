@@ -223,13 +223,13 @@ var Main = new(function()
 
 		if( _currentClassType == 'yoga' && classes_left > 0 )
 		{
-			$( '#class-card-payment' ).removeClass( 'hidden' );
-			$( '#class-card-payment' ).html(
+			$( '#class-card' ).removeClass( 'hidden' );
+			$( '#class-card' ).html(
 				'<input type="radio" value="class card" name="class-payment">' +
 				'Class card (' + classes_left + ' left of ' + card + ' : meaning after the class is saved, it will be one less )'
 			);
 
-			$( '#class-card-payment input' ).prop( "checked", true );
+			$( '#class-card input' ).prop( "checked", true );
 		}
 
 		$( '#student-name' ).val( fullname );
@@ -294,7 +294,7 @@ var Main = new(function()
 					// Class Card - 10 classes ($35 - gift)
 				}
 				goods_display += txt + ", ";
-				total += parseInt($( selected ).val(), 10) || 0;
+				total += parseInt( $( selected ).val(), 10 ) || 0;
 			});
 		}else
 		{
@@ -334,7 +334,7 @@ var Main = new(function()
 		};
 
 		// console.log( 'userData', userData );
-		// return
+		// return;
 		// console.log( 'student_name', student_name );
 		// console.log( '_isExistingStudent', _isExistingStudent );
 		// console.log( 'purchased_class_card', purchased_class_card );
@@ -486,7 +486,7 @@ var Main = new(function()
 	function _resetStudentForm()
 	{
 		$( '#student-name' ).val( '' );
-		$( '#class-card-payment' ).addClass( 'hidden' );
+		$( '#class-card' ).addClass( 'hidden' );
 		$( '#goods' ).each(function( i, item )
 		{
 			$(item).removeAttr( 'selected' );
