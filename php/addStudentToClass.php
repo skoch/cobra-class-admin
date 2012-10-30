@@ -40,11 +40,12 @@
 			$student_id = $data['student_id'];
 		}
 
+		$use_class_card = $data['use_class_card'] === 'true' ? true : false;
 		$new_student = array(
 			'name'        	=> $data['fullname'],
 			'id'        	=> $student_id,
 			'payment'		=> $data['payment'],
-			'use_card'		=> (boolean) $data['use_class_card'],
+			'use_card'		=> $use_class_card,
 			'goods_display' => $data['goods_display'],
 			'total'     	=> $data['total']
 		);
